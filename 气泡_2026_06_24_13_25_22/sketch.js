@@ -29,19 +29,19 @@ function setup() {
   // 1. 创建文件上传控件
   fileInput = createFileInput(handleFile);
   fileInput.position(10, height + 10); 
-  fileInput.style('z-index', '9999'); 
+  fileInput.style('z-index', '9999'); // 📱 强行置顶，防止手机端被画布图层遮挡点不动
   
   // 2. 创建滑块
   sizeSlider = createSlider(0.1, 2, 1, 0.01);
   sizeSlider.position(150, height + 10);
   sizeSlider.style('width', '150px');
-  sizeSlider.style('z-index', '9999'); 
+  sizeSlider.style('z-index', '9999'); // 📱 强行置顶
 
   // 3. 创建保存图片按钮
   saveBtn = createButton('保存我的图片');
   saveBtn.position(320, height + 10);
   saveBtn.mousePressed(saveMyCanvas); 
-  saveBtn.style('z-index', '9999'); 
+  saveBtn.style('z-index', '9999'); // 📱 强行置顶
 
   // 4. 创建网页下方的多行输入框
   textInput = createInput('', 'textarea'); 
@@ -50,14 +50,14 @@ function setup() {
   textInput.style('height', '80px');       
   textInput.attribute('placeholder', '请在此处输入文字，长串英文或回车均可正常换行...');
   textInput.attribute('maxlength', '45'); 
-  textInput.style('z-index', '9999'); 
+  textInput.style('z-index', '9999'); // 📱 强行置顶
 
   // --- 让画布在网页中水平居中并美化背景 ---
   let canvasElement = canvas.canvas;
   canvasElement.style.margin = "20px auto";
   canvasElement.style.display = "block";
   canvasElement.style.position = "relative";
-  canvasElement.style.zIndex = "1"; 
+  canvasElement.style.zIndex = "1"; // 🎨 将画布层级设为底层，给原生按钮组件让路
 
   // 给网页后台换个舒适的浅灰色背景
   select('body').style('background-color', '#f0f0f0');
@@ -113,6 +113,7 @@ function draw() {
       let pText = paragraphs[i];
       if (yOffset >= maxHeight) break;
       
+      // 强制拆解为单个字符流，防止长英文不换行
       let currentLineText = "";
       
       for (let j = 0; j < pText.length; j++) {
@@ -155,9 +156,10 @@ function saveMyCanvas() {
 }
 
 // ==========================================
-// 💻 电脑端：鼠标交互逻辑
+// 💻 电脑端：鼠标交互逻辑 (已完美兼容移动端隔离)
 // ==========================================
 function mousePressed() {
+  // 如果是移动端触屏设备，直接跳过鼠标逻辑，防止冲突卡死
   if (matchMedia('(pointer: coarse)').matches) return;
 
   if (userImg) {
@@ -199,37 +201,36 @@ function handleFile(file) {
 }
 
 // ==========================================
-// 📱 手机端：触摸拖拽兼容逻辑 (安全释放优化版)
+// 📱 手机端：触摸拖拽兼容逻辑 (全新稳定版)
 // ==========================================
 function touchStarted() {
+  // 如果有有效的手指触摸且上传了图片
   if (userImg && touches && touches.length > 0) {
     let scaleFactor = sizeSlider.value();
     let targetWidth = userImg.width * scaleFactor;
     let targetHeight = userImg.height * scaleFactor;
     
-    // 精准获取基于画布的触摸点坐标
     let tX = touches[0].x;
     let tY = touches[0].y;
     
-    // 【关键优化】只有当手指确实点在图片矩形范围内时，才激活拖拽并拦截事件
+    // 判断手指是否落在用户上传的图片范围内
     if (tX > userX - targetWidth / 2 && tX < userX + targetWidth / 2 &&
         tY > userY - targetHeight / 2 && tY < userY + targetHeight / 2) {
       isDragging = true;
-      return false; // 仅在此处限制手机默认滚动
+      return false; // 只在拖拽图片时阻止手机默认滚动行为
     }
   }
-  // 如果点的是别的地方（滑块、按钮、输入框），无条件放行，交给原生组件处理
 }
 
 function touchMoved() {
   if (isDragging && touches && touches.length > 0) {
+    // 让图片中心坐标精准跟随手指的滑动
     userX = touches[0].x;
     userY = touches[0].y;
-    return false; // 正在拖拽图片时，禁止页面跟着一起上下滚屏
+    return false; // 拖拽期间禁止页面滚动
   }
 }
 
 function touchEnded() {
-  // 【关键优化】手指一旦离开屏幕，立刻强制释放拖拽状态，把控制权还给浏览器
   isDragging = false;
 }
