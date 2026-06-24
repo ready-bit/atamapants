@@ -10,8 +10,8 @@ let isDragging = false;
 let textInput;      // 网页下方的多行输入框
 
 function preload() {
-  // 保持加载你本地的“手拿思想气泡.png”
-  bgImg = loadImage('手拿思想气泡.png'); 
+  // 保持加载你本地的“bg.png”
+  bgImg = loadImage('bg.png'); 
 }
 
 function setup() {
