@@ -19,7 +19,7 @@ function setup() {
   let canvasWidth = 450;
   let canvasHeight = (canvasWidth * 4) / 3; 
   
-  // 【已修改】用变量 canvas 接住，以便后续调用底层样式
+  // 用变量 canvas 接住，以便后续调用底层样式
   let canvas = createCanvas(canvasWidth, canvasHeight); 
   
   // 初始化用户图片的位置在画布中央
@@ -29,16 +29,19 @@ function setup() {
   // 1. 创建文件上传控件
   fileInput = createFileInput(handleFile);
   fileInput.position(10, height + 10); 
+  fileInput.style('z-index', '9999'); // 📱 强行置顶，防止手机端被画布遮挡
   
   // 2. 创建滑块
   sizeSlider = createSlider(0.1, 2, 1, 0.01);
   sizeSlider.position(150, height + 10);
   sizeSlider.style('width', '150px');
+  sizeSlider.style('z-index', '9999'); // 📱 强行置顶
 
   // 3. 创建保存图片按钮
   saveBtn = createButton('保存我的图片');
   saveBtn.position(320, height + 10);
   saveBtn.mousePressed(saveMyCanvas); 
+  saveBtn.style('z-index', '9999'); // 📱 强行置顶
 
   // 4. 创建网页下方的多行输入框
   textInput = createInput('', 'textarea'); 
@@ -46,14 +49,15 @@ function setup() {
   textInput.style('width', '430px');      
   textInput.style('height', '80px');       
   textInput.attribute('placeholder', '请在此处输入文字，长串英文或回车均可正常换行...');
-  
-  // 严格限制字数
   textInput.attribute('maxlength', '45'); 
+  textInput.style('z-index', '9999'); // 📱 强行置顶
 
-  // --- 新增：让画布在网页中水平居中并美化背景 ---
+  // --- 让画布在网页中水平居中并美化背景 ---
   let canvasElement = canvas.canvas;
   canvasElement.style.margin = "20px auto";
   canvasElement.style.display = "block";
+  canvasElement.style.position = "relative";
+  canvasElement.style.zIndex = "1"; // 🎨 将画布层级设为底层，给按钮让路
 
   // 给网页后台换个舒适的浅灰色背景
   select('body').style('background-color', '#f0f0f0');
@@ -159,8 +163,7 @@ function saveMyCanvas() {
 // 💻 电脑端：鼠标交互逻辑
 // ==========================================
 function mousePressed() {
-  // 如果当前存在手指触摸，则不执行鼠标点击逻辑，防止双重误触发
-  if (typeof touches !== 'undefined' && touches.length > 0) return false;
+  if (typeof touches !== 'undefined' && touches.length > 0) return;
 
   if (userImg) {
     let scaleFactor = sizeSlider.value();
@@ -174,7 +177,7 @@ function mousePressed() {
 }
 
 function mouseDragged() {
-  if (typeof touches !== 'undefined' && touches.length > 0) return false;
+  if (typeof touches !== 'undefined' && touches.length > 0) return;
 
   if (isDragging) {
     userX = mouseX;
@@ -183,7 +186,7 @@ function mouseDragged() {
 }
 
 function mouseReleased() {
-  if (typeof touches !== 'undefined' && touches.length > 0) return false;
+  if (typeof touches !== 'undefined' && touches.length > 0) return;
   isDragging = false;
 }
 
@@ -216,22 +219,19 @@ function touchStarted() {
     if (tX > userX - targetWidth / 2 && tX < userX + targetWidth / 2 &&
         tY > userY - targetHeight / 2 && tY < userY + targetHeight / 2) {
       isDragging = true;
+      return false; // 只在点中图片时阻止默认滚动
     }
   }
-  // 严格阻止手机默认的网页滚动/手势缩放干扰
-  return false; 
 }
 
 function touchMoved() {
   if (isDragging && touches.length > 0) {
-    // 让图片中心坐标精准跟随第一根手指的滑动
     userX = touches[0].x;
     userY = touches[0].y;
+    return false; // 正在拖拽时阻止页面滚动
   }
-  return false; 
 }
 
 function touchEnded() {
   isDragging = false;
-  return false;
 }
