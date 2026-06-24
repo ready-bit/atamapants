@@ -191,3 +191,44 @@ function handleFile(file) {
     userImg = null;
   }
 }
+// ==========================================
+// 📱 新增：手机端触摸拖拽兼容逻辑
+// ==========================================
+
+function touchStarted() {
+  // 如果用户上传了图片
+  if (userImg) {
+    let scaleFactor = sizeSlider.value();
+    let targetWidth = userImg.width * scaleFactor;
+    let targetHeight = userImg.height * scaleFactor;
+    
+    // touches[0] 代表第一根手指按下的位置
+    if (touches.length > 0) {
+      let tX = touches[0].x;
+      let tY = touches[0].y;
+      
+      // 判断手指是不是戳中了图片的范围
+      if (tX > userX - targetWidth / 2 && tX < userX + targetWidth / 2 &&
+          tY > userY - targetHeight / 2 && tY < userY + targetHeight / 2) {
+        isDragging = true;
+      }
+    }
+  }
+  // 阻止手机默认的屏幕滚动手势（关键！）
+  return false; 
+}
+
+function touchMoved() {
+  if (isDragging && touches.length > 0) {
+    // 让图片坐标跟随手指移动
+    userX = touches[0].x;
+    userY = touches[0].y;
+  }
+  // 阻止手机默认的屏幕滚动手势（关键！）
+  return false; 
+}
+
+function touchEnded() {
+  isDragging = false;
+  return false;
+}
