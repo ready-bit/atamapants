@@ -155,8 +155,13 @@ function saveMyCanvas() {
   saveCanvas('my_design', 'png');
 }
 
-// 鼠标交互与图片加载逻辑保持不变
+// ==========================================
+// 💻 电脑端：鼠标交互逻辑
+// ==========================================
 function mousePressed() {
+  // 如果当前存在手指触摸，则不执行鼠标点击逻辑，防止双重误触发
+  if (typeof touches !== 'undefined' && touches.length > 0) return false;
+
   if (userImg) {
     let scaleFactor = sizeSlider.value();
     let targetWidth = userImg.width * scaleFactor;
@@ -169,6 +174,8 @@ function mousePressed() {
 }
 
 function mouseDragged() {
+  if (typeof touches !== 'undefined' && touches.length > 0) return false;
+
   if (isDragging) {
     userX = mouseX;
     userY = mouseY;
@@ -176,6 +183,7 @@ function mouseDragged() {
 }
 
 function mouseReleased() {
+  if (typeof touches !== 'undefined' && touches.length > 0) return false;
   isDragging = false;
 }
 
@@ -191,40 +199,35 @@ function handleFile(file) {
     userImg = null;
   }
 }
-// ==========================================
-// 📱 新增：手机端触摸拖拽兼容逻辑
-// ==========================================
 
+// ==========================================
+// 📱 手机端：触摸拖拽兼容逻辑
+// ==========================================
 function touchStarted() {
-  // 如果用户上传了图片
-  if (userImg) {
+  if (userImg && touches.length > 0) {
     let scaleFactor = sizeSlider.value();
     let targetWidth = userImg.width * scaleFactor;
     let targetHeight = userImg.height * scaleFactor;
     
-    // touches[0] 代表第一根手指按下的位置
-    if (touches.length > 0) {
-      let tX = touches[0].x;
-      let tY = touches[0].y;
-      
-      // 判断手指是不是戳中了图片的范围
-      if (tX > userX - targetWidth / 2 && tX < userX + targetWidth / 2 &&
-          tY > userY - targetHeight / 2 && tY < userY + targetHeight / 2) {
-        isDragging = true;
-      }
+    let tX = touches[0].x;
+    let tY = touches[0].y;
+    
+    // 判断手指是否落在用户上传的图片范围内
+    if (tX > userX - targetWidth / 2 && tX < userX + targetWidth / 2 &&
+        tY > userY - targetHeight / 2 && tY < userY + targetHeight / 2) {
+      isDragging = true;
     }
   }
-  // 阻止手机默认的屏幕滚动手势（关键！）
+  // 严格阻止手机默认的网页滚动/手势缩放干扰
   return false; 
 }
 
 function touchMoved() {
   if (isDragging && touches.length > 0) {
-    // 让图片坐标跟随手指移动
+    // 让图片中心坐标精准跟随第一根手指的滑动
     userX = touches[0].x;
     userY = touches[0].y;
   }
-  // 阻止手机默认的屏幕滚动手势（关键！）
   return false; 
 }
 
