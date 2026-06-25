@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>思想气泡照相馆</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/addons/p5.sound.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&family=Caveat:wght@500;700&family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <p class="eyebrow">手记 · DAILY THOUGHT BOOTH</p>
+        <h1 class="title">把你的念头<br />装进气泡里</h1>
+        <p class="subtitle">贴上一张照片，拖一拖气泡，写下今天脑子里转的那句话，冲印带走。</p>
+      </header>
+
+      <main class="darkroom">
+        <div class="photo-frame" id="canvas-frame">
+          <span class="tape tape-left" aria-hidden="true"></span>
+          <span class="tape tape-right" aria-hidden="true"></span>
+          <p class="drag-hint">拖一拖气泡 ↗</p>
+        </div>
+
+        <section class="tray">
+          <div class="tool" id="tool-upload">
+            <span class="tool-tag">贴照片</span>
+            <div class="tool-slot" id="upload-slot"></div>
+          </div>
+
+          <div class="tool" id="tool-size">
+            <span class="tool-tag">调气泡大小</span>
+            <div class="tool-slot" id="slider-slot"></div>
+          </div>
+
+          <div class="tool tool-wide" id="tool-text">
+            <span class="tool-tag">写点心里话</span>
+            <div class="tool-slot" id="text-slot"></div>
+          </div>
+
+          <div class="tool tool-action" id="tool-save">
+            <div class="tool-slot" id="save-slot"></div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="foot-note">纯前端生成 · 你的照片不会上传到任何服务器</footer>
+    </div>
+
+    <script src="sketch.js"></script>
+  </body>
+</html>
